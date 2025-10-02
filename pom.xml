@@ -148,6 +148,30 @@
             </plugin>
 
             <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.9</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jpackage</goal>
+                        </goals>
+                        <configuration>
+                            <appName>Secure Password Manager</appName>
+                            <appVersion>1.0</appVersion>
+                            <vendor>Your Company Name</vendor>
+                            <mainClass>com.passwordmanager.AppLauncher</mainClass>
+                            <type>msi</type> <input>target</input>
+                            <jlinkArgs>
+                                <arg>--add-modules</arg>
+                                <arg>java.base,java.desktop,java.sql</arg> 
+                            </jlinkArgs>
+                            </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
