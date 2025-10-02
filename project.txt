@@ -1,0 +1,60 @@
+Phase 1: Application Setup and Configuration --------------------------------
+1.1 Database Configuration File
+Problem: Database credentials are hardcoded in DatabaseManager.java. Fix: Move DB_URL, DB_USER, and DB_PASSWORD to an encrypted local configuration file (e.g., config.properties). If the app launches and cannot find credentials, it should prompt the admin to enter them, saving them securely.
+
+1.2 Global Exception Handler
+Implement a global handler (e.g., Thread.setDefaultUncaughtExceptionHandler) to catch unexpected errors, log them, and display a professional "Something went wrong" message instead of crashing with a Java stack trace.
+
+1.3 Initial UI Sizing
+Requirement: Start in a larger window. Action: Update AppLauncher.java and LoginDialog.java to use larger default dimensions (setSize(800, 600)) and ensure MainFrame is maximized or starts at a substantial size (e.g., 1200x800).
+
+Phase 2: Enhanced User Experience (UX) --------------------------------
+This addresses the "bigger UI" and "detailed expansion" requirements for a premium feel.
+
+2.1 Bigger, Clearer Dialogs
+Bigger Login/Registration: Increase the size of LoginDialog and RegistrationDialog beyond minimum required dimensions.
+
+Clearer Layout: Ensure both dialogs use the controlled GridBagLayout (which you fixed) with ample padding (gbc.insets) to prevent crowding.
+
+2.2 Tooltips and Contextual Help (Crucial for "TOTP")
+Requirement: Detailed explanation of terms like "TOTP."
+
+Action: Add informative Tooltips to every non-obvious field, providing a clean expansion on hover.
+
+TOTP Code Field: Set the tooltip: totpField.setToolTipText("Time-based One-Time Password. Get this 6-digit code from the authenticator app you set up during registration.");
+
+Master Password Field: Set the tooltip: "Your primary, unrecoverable key. Used to decrypt all saved passwords."
+
+2.3 Loading Indicators
+When clicking Login Securely or Register, implement an immediate visual change (e.g., disabling the button, showing a brief spinning loader, or changing the button text to "Verifying...") to let the user know the cloud process has started.
+
+Phase 3: Authentication and Flow
+
+3.1 Complete Registration Flow
+Ensure the RegistrationDialog correctly handles: password complexity validation, user creation via AuthService.registerUser(), and the immediate, successful display of the TOTP QR Code URI.
+
+3.2 TOTP Setup Display
+If the user registers successfully, display a large, dedicated window (or substantial JOptionPane) with the following elements: 1. The QR Code (requires a small library to render the QR image from the URI). 2. Clear instructions for scanning. 3. The Secret Key shown as fallback text.
+
+3.3 Master Key Derivation
+Confirm that the Master Key is derived only once upon successful login and passed securely to MainFrame as a byte[] array, avoiding repeated hashing during the session.
+
+Phase 4: Self-Repair and Database Resilience ------------------------------------
+4.1 Connection Failure Handling
+If DatabaseManager.getConnection() fails (e.g., FATAL: Tenant or user not found), the app should not crash. Instead: 1. Log the error. 2. Display a specific JDialog titled "Database Connection Error." 3. Provide an option to [Edit Configuration] (leading back to the configuration file prompt from Step 1.1) or [Retry Connection].
+
+4.2 Data Validation before Save
+In PasswordService.createEntry(), enforce field constraints (e.g., Title is not empty, Password is not weak) before attempting encryption or sending data to the cloud.
+
+4.3 Backup & Restore Workflow
+Implement the backup feature (Phase 7/8). The backup should encrypt all entries using a separate, strong encryption key (not the Master Password) and save it to a local JSON file. This provides a self-service recovery option if Supabase fails.
+
+Phase 5: Final Packaging and Deployment -------------------------------------------
+5.1 Create Native Installer (jpackage)
+Use the javafx:jpackage goal (as configured previously) to create a native Windows MSI installer. This bundles the JRE, ensures a clean install/uninstall process, and allows the application to be launched via a desktop shortcut or the Start Menu, appearing like any other professional Windows application.
+
+5.2 Custom Icon (Step 10.5)
+Ensure a high-resolution, branded icon file (app_icon.ico) is included in the project resources and referenced in the jpackage configuration for a polished look.
+
+5.3 Final Clean Build
+Run the final deployment command (mvn clean javafx:jpackage) to produce the single, professional MSI file ready for client distribution.
